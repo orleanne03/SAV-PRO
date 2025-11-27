@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche SAV — SOS ORDI 03</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- STYLE VERT TECH -->
+    <link rel="stylesheet" href="styles/sav.css">
+    <style>
+        .suggestion-box {
+            background:white;
+            border:1px solid #ccc;
+            border-radius:4px;
+            display:none;
+            position:absolute;
+            z-index:10;
+            width:20%;
+            max-height:150px;
+            overflow-y:auto;
+        }
+        .sug-item {
+            padding:6px;
+            cursor:pointer;
+        }
+        .sug-item:hover {
+            background:#eef;
+        }
+        .add-client-btn {
+            padding:8px;
+            text-align:center;
+            cursor:pointer;
+            font-weight:bold;
+            background:#def;
+        }
+        </style>
+        
+</head>
+
+<body>
+
+<header class="page-header">
+    <a class="btn-return" onclick="history.back()">⬅</a>
+    FICHE SAV — SOS ORDI 03
+</header>
+
+<div class="fiche-container">
+
+    <!-- 🧍 CLIENT -->
+    <div class="card">
+        <h2>🧍 Client</h2>
+
+        <label>Nom :</label>
+        <input id="nom" class="input">
+        <div id="suggestionsNom" class="suggestion-box"></div>
+
+
+        <label>Téléphone :</label>
+        <input id="tel" class="input">
+        <div id="suggestionsTel" class="suggestion-box"></div>
+
+
+        <label>Couleur étiquette :</label>
+        <select id="couleur" class="input">
+            <option value="">Aucune</option>
+            <option value="blue">Bleu</option>
+            <option value="green">Vert</option>
+            <option value="red">Rouge</option>
+            <option value="yellow">Jaune</option>
+            <option value="orange">Orange</option>
+        </select>
+
+        <label>Date d’arrivée :</label>
+        <input id="dateArrivee" type="date" class="input">
+    </div>
+
+<!-- 🖥️ MATÉRIEL -->
+<div class="card">
+    <h2>🖥️ Matériel</h2>
+
+    <label>Type :</label>
+    <select id="type" class="input" onchange="majMarques()">
+        <option value="">-- Choisir un type --</option>
+        <option>Ordinateur Portable</option>
+        <option>Ordinateur Fixe</option>
+        <option>TOUT EN 1</option>
+        <option>Tablette</option>
+        <option>Disque dur externe</option>
+        <option>Écran</option>
+        <option>Imprimante</option>
+        <option>Autre</option>
+    </select>
+
+    <label>Marque :</label>
+    <select id="marque" class="input"></select>
+
+    <label>Modèle (saisie manuelle) :</label>
+    <input id="modele" class="input" placeholder="Ex : A515-56, Inspiron 15, etc">
+
+    <button class="btn-secondary" onclick="ajouterAppareil()">Ajouter</button>
+
+    <div id="listeAppareils" style="margin-top:12px;"></div>
+
+    <label>Mot de passe :</label>
+    <input id="mdp" class="input">
+
+    <!-- Accordéon accessoires -->
+    <div class="accordion">
+        <div class="accordion-header">
+            Accessoires fournis
+            <span class="arrow">▼</span>
+        </div>
+        <div class="accordion-content">
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="accBox" value="Chargeur"> Chargeur</label>
+                <label><input type="checkbox" class="accBox" value="Housse"> Housse</label>
+                <label><input type="checkbox" class="accBox" va lue="Souris"> Souris</label>
+                <label><input type="checkbox" class="accBox" value="Câble HDMI"> Câble HDMI</label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+    <!-- ⚠️ PROBLÈME -->
+    <div class="card">
+        <h2>⚠️ Problème</h2>
+        <textarea id="probleme" class="textarea"></textarea>
+    </div>
+
+    <!-- 🛠️ TRAVAUX ACCORDÉON -->
+    <div class="accordion">
+        <div class="accordion-header">
+            🛠️ Travaux à réaliser
+            <span class="arrow">▼</span>
+        </div>
+        <div class="accordion-content">
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="travBox" value="Migration Windows 11"> Migration Windows 11</label>
+                <label><input type="checkbox" class="travBox" value="Nettoyage"> Nettoyage / Optimisation</label>
+                <label><input type="checkbox" class="travBox" value="Réinstallation Windows"> Réinstallation Windows</label>
+                <label><input type="checkbox" class="travBox" value="Installation SSD"> Installation SSD</label>
+                <label><input type="checkbox" class="travBox" value="Clonage"> Clonage disque</label>
+                <label><input type="checkbox" class="travBox" value="Ajout RAM"> Ajout RAM</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💾 SAUVEGARDE -->
+    <div class="card">
+        <h2>💾 Sauvegarde</h2>
+
+        <label>Sauvegarde :</label>
+        <select id="sauv" class="input">
+            <option value="Non">Non</option>
+            <option value="Oui">Oui</option>
+        </select>
+
+        <!-- Accordéon si Oui -->
+        <div id="acc-sauv" class="accordion" style="display:none;">
+            <div class="accordion-header">
+                Options de sauvegarde
+                <span class="arrow">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" class="sauvBox" value="Documents"> Documents</label>
+                    <label><input type="checkbox" class="sauvBox" value="Images"> Images</label>
+                    <label><input type="checkbox" class="sauvBox" value="Vidéos"> Vidéos</label>
+                    <label><input type="checkbox" class="sauvBox" value="Favoris"> Favoris</label>
+                    <label><input type="checkbox" class="sauvBox" value="Passe"> Mot de passe</label><br>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💶 TARIFS + STATUT SAV SUR UNE LIGNE -->
+    <div class="row-two">
+
+        <!-- 💶 TARIFS -->
+        <div class="card2">
+            <h2>💶 Tarifs</h2>
+
+            <label>Estimation :</label>
+            <input id="tarifEst" class="input">
+
+            <label>Prix réel :</label>
+            <input id="tarifReel" class="input">
+        </div>
+
+        <!-- 📅 RÉCUPÉRATION CLIENT-->
+        <div class="card2">
+        <div class="accordion">
+            <div class="accordion-header">
+                📅 Récupération client
+                <span class="arrow">▼</span>
+            </div>
+    
+            <div class="accordion-content">
+                <label>Date :</label>
+                <input type="date" id="dateRecup" class="input">
+    
+                <label>Heure :</label>
+                <input type="time" id="heureRecup" class="input">
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+
+    <button class="btn-primary" id="btnSave">Enregistrer</button>
+
+</div>
+<script src="scripts/sav-ui.js"></script>
+<script src="scripts/sav-fiche-ui.js"></script>
+<script type="module" src="scripts/sav-fiche-data.js"></script>
+
+
+ </script>
+
+    
+    
+
+</body>
+</html>

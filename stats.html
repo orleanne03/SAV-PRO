@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique Client — SOS ORDI 03</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles/stats.css">
+</head>
+
+<body>
+
+<header class="page-header">
+    <a class="btn-return" href="index.html">⬅ Retour</a>
+    Historique Client
+</header>
+
+<div class="stats-container">
+
+    <!-- 🔍 Recherche client -->
+    <div class="card">
+        <h2>🔍 Rechercher un client</h2>
+        <input id="searchClient" class="input" placeholder="Nom ou téléphone...">
+        <div id="suggestions" class="suggestion-box"></div>
+    </div>
+
+    <!-- 👤 Informations client -->
+    <div id="clientInfo" class="card" style="display:none;"></div>
+
+    <!-- 🛠 Historique & appareils -->
+    <div id="clientStats" class="card" style="display:none;"></div>
+
+</div>
+
+<script type="module" src="scripts/stats.js"></script>
+
+</body>
+</html>

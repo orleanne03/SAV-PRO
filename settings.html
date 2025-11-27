@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Paramètres — SOS ORDI 03</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    margin:0;
+    background:#f3f5f4;
+    font-family:"Inter", sans-serif;
+}
+
+.header {
+    background:#16a34a;
+    padding:16px;
+    text-align:center;
+    color:white;
+    font-size:24px;
+    font-weight:800;
+}
+
+.container {
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+}
+
+.card {
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    margin-bottom:15px;
+    box-shadow:0 2px 6px #0001;
+}
+
+.title {
+    font-size:19px;
+    font-weight:700;
+    margin-bottom:10px;
+    color:#16a34a;
+}
+
+.input {
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    margin:6px 0 14px 0;
+}
+
+select.input {
+    background:white;
+}
+
+.btn {
+    padding:10px 14px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+.btn-green { background:#16a34a; color:white; }
+.btn-red { background:#dc2626; color:white; }
+.btn-blue { background:#2563eb; color:white; }
+.btn-gray { background:#555; color:white; }
+
+.flex {
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">⚙️ Paramètres</div>
+
+<div class="container">
+
+    <!-- INFORMATIONS ENTREPRISE -->
+    <div class="card">
+        <div class="title">🏢 Informations entreprise</div>
+
+        <label>Nom commercial</label>
+        <input id="e_nom" class="input">
+
+        <label>E-mail</label>
+        <input id="e_mail" class="input">
+
+        <label>Téléphone</label>
+        <input id="e_tel" class="input">
+
+        <button class="btn btn-green" onclick="saveEntreprise()">💾 Enregistrer</button>
+    </div>
+
+    <!-- THEME -->
+    <div class="card">
+        <div class="title">🎨 Thème graphique</div>
+
+        <label>Couleur du thème</label>
+        <select id="theme" class="input">
+            <option value="green">Vert Tech (par défaut)</option>
+            <option value="blue">Bleu</option>
+            <option value="red">Rouge</option>
+            <option value="dark">Sombre</option>
+        </select>
+
+        <button class="btn btn-blue" onclick="saveTheme()">💾 Appliquer le thème</button>
+    </div>
+
+    <!-- FINANCES -->
+    <div class="card">
+        <div class="title">💶 Tarifs & TVA</div>
+
+        <label>TVA (%)</label>
+        <input id="tva" type="number" class="input">
+
+        <label>Forfait diagnostic (€)</label>
+        <input id="forfait_diag" type="number" class="input">
+
+        <label>Tarif main d'œuvre / heure (€)</label>
+        <input id="mo" type="number" class="input">
+
+        <button class="btn btn-green" onclick="saveTarifs()">💾 Enregistrer</button>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="card">
+        <div class="title">📦 Export / Import données</div>
+
+        <button class="btn btn-blue" onclick="exportData()">⬇ Exporter toutes les données (JSON)</button>
+
+        <label style="margin-top:15px;">Importer un fichier JSON</label>
+        <input id="import_file" class="input" type="file">
+
+        <button class="btn btn-gray" onclick="importData()">⬆ Importer</button>
+    </div>
+
+    <!-- RÉINITIALISATION -->
+    <div class="card">
+        <div class="title">🧨 Réinitialisation (danger)</div>
+
+        <div class="flex">
+            <button class="btn btn-red" onclick="resetModule('fiches')">🗑 Effacer toutes les fiches SAV</button>
+            <button class="btn btn-red" onclick="resetModule('stock')">🗑 Effacer le stock</button>
+            <button class="btn btn-red" onclick="resetModule('clients')">🗑 Effacer les clients</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+
+import { db } from "./scripts/firebase-config.js";
+import {
+    collection,
+    getDocs,
+    setDoc,
+    addDoc,
+    doc,
+    deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ---------------------------
+// CHARGEMENT DES PARAMÈTRES
+// ---------------------------
+async function loadSettings() {
+    const snap = await getDocs(collection(db, "settings"));
+    snap.forEach(d => {
+        if (d.id === "entreprise") {
+            e_nom.value = d.data().nom || "";
+            e_mail.value = d.data().mail || "";
+            e_tel.value = d.data().tel || "";
+        }
+        if (d.id === "theme") {
+            theme.value = d.data().theme || "green";
+        }
+        if (d.id === "tarifs") {
+            tva.value = d.data().tva || "";
+            forfait_diag.value = d.data().forfait_diag || "";
+            mo.value = d.data().mo || "";
+        }
+    });
+}
+loadSettings();
+
+// ---------------------------
+// SAUVEGARDE ENTREPRISE
+// ---------------------------
+window.saveEntreprise = async function() {
+    await setDoc(doc(db, "settings", "entreprise"), {
+        nom: e_nom.value.trim(),
+        mail: e_mail.value.trim(),
+        tel: e_tel.value.trim()
+    });
+    alert("✔ Informations enregistrées !");
+};
+
+// ---------------------------
+// SAUVEGARDE THEME
+// ---------------------------
+window.saveTheme = async function() {
+    await setDoc(doc(db, "settings", "theme"), {
+        theme: theme.value
+    });
+    alert("✔ Thème enregistré !");
+};
+
+// ---------------------------
+// SAUVEGARDE TARIFS
+// ---------------------------
+window.saveTarifs = async function() {
+    await setDoc(doc(db, "settings", "tarifs"), {
+        tva: tva.value,
+        forfait_diag: forfait_diag.value,
+        mo: mo.value
+    });
+    alert("✔ Tarifs enregistrés !");
+};
+
+// ---------------------------
+// EXPORT JSON
+// ---------------------------
+window.exportData = async function() {
+
+    const tables = ["fiches","stock","clients","settings"];
+    let result = {};
+
+    for (let t of tables) {
+        const snap = await getDocs(collection(db, t));
+        result[t] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sav-backup.json";
+    a.click();
+};
+
+// ---------------------------
+// IMPORT JSON
+// ---------------------------
+window.importData = async function() {
+    const file = import_file.files[0];
+    if (!file) return alert("Aucun fichier sélectionné.");
+
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    for (let t in data) {
+        for (let entry of data[t]) {
+            await setDoc(doc(db, t, entry.id), entry);
+        }
+    }
+
+    alert("✔ Import terminé !");
+};
+
+// ---------------------------
+// RESET MODULES
+// ---------------------------
+window.resetModule = async function(module) {
+    if (!confirm("Effacer tout " + module + " ?")) return;
+
+    const snap = await getDocs(collection(db, module));
+    snap.forEach(async d => await deleteDoc(doc(db, module, d.id)));
+
+    alert("✔ Module réinitialisé !");
+};
+
+</script>
+
+</body>
+</html>

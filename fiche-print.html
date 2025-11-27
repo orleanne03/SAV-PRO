@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fiche SAV - Impression</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 30px;
+    background: white;
+    color:#111;
+}
+
+.page {
+    width: 210mm;
+    margin: auto;
+}
+
+/* ------------------------- */
+/*       HEADER              */
+/* ------------------------- */
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding:15px;
+    border-radius:12px;
+}
+
+h1 {
+    color: #16a34a;
+    font-size: 28px;
+    margin: 0;
+    font-weight:900;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background:#16a34a;
+    color:white;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:700;
+    margin-top:12px;
+}
+
+.section {
+    margin-bottom: 18px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #16a34a;
+    margin-bottom: 6px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table td {
+    padding: 6px 4px;
+    vertical-align: top;
+}
+
+.label {
+    color: #444;
+    font-weight: 600;
+    width: 180px;
+}
+
+.photo {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+.signature-box {
+    height: 110px;
+    border: 1px dashed #aaa;
+    margin-top: 10px;
+}
+
+.footer {
+    text-align:center;
+    margin-top:40px;
+    font-size:12px;
+    color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER COLORÉ -->
+    <div id="headerZone" class="header">
+        <h1>SOS ORDI 03 — Fiche SAV</h1>
+        <div id="badgeStatut"></div>
+    </div>
+
+    <!-- STATUT -->
+    <div class="section">
+        <div class="section-title">📌 Statut</div>
+        <div id="statutText">—</div>
+    </div>
+
+    <!-- CLIENT -->
+    <div class="section">
+        <div class="section-title">👤 Informations client</div>
+        <table class="table">
+            <tr><td class="label">Nom :</td><td id="c_nom"></td></tr>
+            <tr><td class="label">Téléphone :</td><td id="c_tel"></td></tr>
+            <tr><td class="label">Date de dépôt :</td><td id="c_date"></td></tr>
+            <tr><td class="label">Date de récupération :</td><td id="c_recup"></td></tr>
+        </table>
+    </div>
+
+    <!-- MATÉRIEL -->
+    <div class="section">
+        <div class="section-title">💻 Matériel confié</div>
+        <table class="table" id="c_appareils"></table>
+    </div>
+
+    <!-- PROBLÈME -->
+    <div class="section">
+        <div class="section-title">📝 Problème déclaré</div>
+        <div id="c_prob"></div>
+    </div>
+
+    <!-- TRAVAUX -->
+    <div class="section">
+        <div class="section-title">🔧 Travaux effectués / prévus</div>
+        <div id="c_travaux"></div>
+    </div>
+
+    <!-- TARIFS -->
+    <div class="section">
+        <div class="section-title">💶 Tarification</div>
+        <table class="table">
+            <tr><td class="label">Estimation :</td><td id="c_est"></td></tr>
+            <tr><td class="label">Montant réel :</td><td id="c_reel"></td></tr>
+        </table>
+    </div>
+
+    <!-- PHOTOS -->
+    <div class="section">
+        <div class="section-title">📸 Photos</div>
+        <table class="table">
+            <tr>
+                <td><img id="c_photo1" class="photo" style="display:none"></td>
+                <td><img id="c_photo2" class="photo" style="display:none"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="section">
+        <div class="section-title">✍ Signature client</div>
+        <div id="signatureZone"></div>
+    </div>
+
+    <div class="footer">
+        Document généré automatiquement — SOS ORDI 03 — www.sosordi03.fr
+    </div>
+
+</div>
+
+<script type="module">
+
+import { db } from "./scripts/firebase-config.js";
+import { STATUTS } from "./scripts/sav-status.js";
+import {
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
+
+// Elements
+const nom = document.getElementById("c_nom");
+const tel = document.getElementById("c_tel");
+const date = document.getElementById("c_date");
+const recup = document.getElementById("c_recup");
+const travaux = document.getElementById("c_travaux");
+const prob = document.getElementById("c_prob");
+const appareils = document.getElementById("c_appareils");
+const badge = document.getElementById("badgeStatut");
+const statutText = document.getElementById("statutText");
+const headerZone = document.getElementById("headerZone");
+
+const est = document.getElementById("c_est");
+const reel = document.getElementById("c_reel");
+
+// Photos
+const photo1 = document.getElementById("c_photo1");
+const photo2 = document.getElementById("c_photo2");
+
+// Signature
+const signatureZone = document.getElementById("signatureZone");
+
+async function load() {
+    if (!id) return;
+
+    const ref = doc(db, "fiches", id);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) return;
+
+    const f = snap.data();
+
+    // Basic
+    nom.textContent = f.nom;
+    tel.textContent = f.tel;
+    date.textContent = new Date(f.date).toLocaleDateString();
+    recup.textContent = f.dateRecup ? f.dateRecup + " " + (f.heureRecup || "") : "—";
+    prob.textContent = f.probleme || "—";
+    est.textContent = f.tarifEstimation ? f.tarifEstimation + " €" : "—";
+    reel.textContent = f.tarifReel ? f.tarifReel + " €" : "—";
+
+    // STATUT + BADGE COLORÉ
+    if (f.statut && STATUTS[f.statut]) {
+        const s = STATUTS[f.statut];
+
+        badge.innerHTML = `
+            <span class="badge" style="background:${s.color}">
+                ${s.badge}
+            </span>
+        `;
+
+        statutText.innerHTML = `
+            <b>${s.label}</b>
+        `;
+
+        headerZone.style.border = `2px solid ${s.color}`;
+        headerZone.style.boxShadow = `inset 0 0 0 1000px ${s.color}15`;
+    }
+
+    // Appareils
+    if (f.appareils) {
+        f.appareils.forEach(a => {
+            appareils.insertAdjacentHTML("beforeend", `
+                <tr>
+                    <td class="label">Type :</td><td>${a.type}</td>
+                </tr>
+                <tr>
+                    <td class="label">Marque :</td><td>${a.marque}</td>
+                </tr>
+                <tr>
+                    <td class="label">Modèle :</td><td>${a.modele}</td>
+                </tr>
+                <tr><td colspan="2"><hr></td></tr>
+            `);
+        });
+    }
+
+    // Travaux
+    travaux.innerHTML = f.travaux && f.travaux.length
+        ? f.travaux.join("<br>")
+        : "Aucun";
+
+    // Photos
+    if (f.photoAvant) {
+        photo1.src = f.photoAvant;
+        photo1.style.display = "block";
+    }
+    if (f.photoApres) {
+        photo2.src = f.photoApres;
+        photo2.style.display = "block";
+    }
+
+    // Signature
+    if (f.signature) {
+        signatureZone.innerHTML = `<img src="${f.signature}" style="width:260px;border:1px solid #ccc;">`;
+    } else {
+        signatureZone.innerHTML = `<div class="signature-box"></div>`;
+    }
+
+}
+
+load();
+
+</script>
+
+<script>
+window.onload = () => window.print();
+</script>
+
+</body>
+</html>

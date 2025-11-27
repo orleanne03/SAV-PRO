@@ -1,0 +1,625 @@
+/* =========================================================
+   SAV PRO — Thème Vert Tech
+   Styles globaux + cartes + accordéons + formulaires
+   ========================================================= */
+
+/* ------------------------------
+   RESET + BASE GLOBALE
+------------------------------ */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  font-family: "Inter", sans-serif;
+  background: #F3F6F8;
+  color: #222;
+  padding-bottom: 60px;
+}
+
+/* ------------------------------
+ HEADER
+------------------------------ */
+.page-header{
+  background: #10A542;
+  color: white;
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.btn-return{
+  position: absolute;
+  left: 15px;
+  top: 12px;
+  background: rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ------------------------------
+ CONTAINER
+------------------------------ */
+.fiche-container{
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+/* ------------------------------
+ CARTES / BLOCS
+------------------------------ */
+.card{
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* ------------------------------
+ ACCORDÉONS
+------------------------------ */
+.accordion{
+  margin-top: 12px;
+}
+
+.accordion-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 16px;
+  background: #F0F5F2;
+  border-radius: 0px;
+  border: 1px solid #DCE7DF;
+  transition: 0.2s;
+}
+
+.accordion-header:hover{
+  background: #E7F3E9;
+}
+
+.accordion-header .arrow{
+  transition: 0.3s;
+  font-size: 18px;
+}
+
+.accordion.open .arrow{
+  transform: rotate(180deg);
+}
+
+.accordion-content{
+  display: none;
+  padding: 14px;
+  background: white;
+  border: 1px solid #DCE7DF;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 20px;
+    margin-top: -20px;
+}
+
+.accordion.open .accordion-content{
+  display: block;
+}
+
+/* ------------------------------
+ FORMULAIRES
+------------------------------ */
+label{
+  font-size: 15px;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+.input, select, textarea{
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid #CCD5DD;
+  background: #FAFCFD;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+textarea{
+  min-height: 120px;
+  resize: vertical;
+}
+
+.checkbox-group{
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-top: 10px;
+}
+
+/* ------------------------------
+ BOUTONS
+------------------------------ */
+.btn-primary{
+  background: #10A542;
+  color: white;
+  padding: 16px;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  margin-top: 25px;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-primary:hover{
+  background: #0D8C3A;
+}
+
+.btn-secondary{
+  background: #5D6778;
+  color: white;
+  padding: 12px 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger{
+  background: #D9534F;
+  color: white;
+  padding: 12px 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ------------------------------
+ STATUTS SAV
+------------------------------ */
+.status-container{
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.status-btn{
+  flex: 1;
+  padding: 14px;
+  text-align: center;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.status-en-cours{
+  background: #E8E8E8;
+  border-color: #CFCFCF;
+}
+
+.status-repare{
+  background: #C4F2D2;
+  border-color: #8FD8A7;
+}
+
+.status-hs{
+  background: #F9C9C7;
+  border-color: #E19A97;
+}
+
+.status-btn.active{
+  box-shadow: 0 0 0 3px rgba(16,165,66,0.25);
+}
+
+/* ------------------------------
+ SIGNATURES
+------------------------------ */
+.signature-zone{
+  margin-top: 15px;
+  padding: 12px;
+  border: 2px dashed #A6B4A6;
+  border-radius: 12px;
+  background: #FAFFFA;
+  text-align: center;
+}
+
+.signature-zone canvas{
+  width: 100%;
+  height: 180px;
+  background: white;
+  border-radius: 10px;
+}
+
+/* ------------------------------
+ DATES
+------------------------------ */
+.date-row{
+  display: flex;
+  gap: 15px;
+}
+
+.date-row input{
+  flex: 1;
+}
+
+/* Ligne 2 colonnes Tarifs + Statut */
+.row-two{
+  display: flex;
+  gap: 20px;
+}
+
+.row-two .half{
+  flex: 1;
+}
+
+/* Statut SAV en colonne */
+.status-container.vertical{
+  flex-direction: column;
+}
+
+.status-container.vertical .status-btn{
+  width: 100%;
+}
+
+/* =============================== */
+/*   HISTORIQUE — STYLE VERT TECH  */
+/* =============================== */
+
+/* Carte de fiche avec bandeau couleur */
+.fiche-card{
+  border-left: 6px solid var(--vert-main);
+  margin-bottom: 16px;
+  padding: 0 !important;
+}
+
+/* Bandeaux selon statut */
+.status-en-cours{
+  border-left-color: #2fa672 !important;
+  background: #e9f9f1;
+}
+
+/* Ligne header fiche */
+.fiche-header-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+/* Boutons actions */
+.fiche-actions{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Accordéon */
+.accordion-header{
+  padding: 12px 16px;
+  background: #f3f3f3;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.arrow{
+  font-size: 14px;
+}
+
+/* Filtres */
+.filter-btn{
+  width: 100%;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.filter-btn.active{
+  border: 2px solid var(--vert-main);
+}
+
+.popup-overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-box{
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.close-btn{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.hidden{
+  display: none !important;
+}
+
+.btn-orange {
+  background: #ffb84d;
+  color: black;
+}
+.btn-orange:hover {
+  background: #ffa31a;
+}.card2 {
+  width: 50%;
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+.status-btn-active {
+  background: var(--active-color) !important;
+  color: white !important;
+  border-color: var(--active-color) !important;
+}
+
+.status-btn-off {
+  background: white !important;
+  color: var(--active-color) !important;
+  border-color: var(--active-color) !important;
+}
+.status-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+  border: 2px solid var(--c);
+  background: white;
+  color: var(--c);
+  transition: 0.15s;
+  cursor: pointer;
+}
+
+.status-btn.active {
+  background: var(--c);
+  color: white;
+}
+.status-toggle {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 2px solid var(--c);
+  background: white;
+  color: var(--c);
+  transition: 0.15s;
+}
+
+.status-toggle.active {
+  background: var(--c);
+  color: white;
+}
+.fiche-reparee {
+  background: #e8fbe8 !important;    /* vert très pâle */
+  border-left: 5px solid #4CAF50;    /* vert */
+}
+.fiche {
+  background: rgb(239, 243, 239); /* très léger, mais pas vert */
+}
+/* ==============================
+   Couleurs Fiches selon statut
+   ============================== */
+
+/* Réparé */
+.fiche-card.repare {
+  background: #e8fbe8;      /* vert pale */
+  border-left: 5px solid #2fa672;
+}
+
+/* Remplacé */
+.fiche-card.remplace {
+  background: #e7f0ff;      /* bleu très clair */
+  border-left: 5px solid #0a5ad1;
+}
+
+/* Pièces commandées */
+.fiche-card.pieces {
+  background: #fff5e1;      /* orange pale */
+  border-left: 5px solid #d89200;
+}
+
+/* Non réparable */
+.fiche-card.nonrep {
+  background: #ffe5e5;      /* rouge pale */
+  border-left: 5px solid #c40000;
+}
+/* Carte normale (garde ton style actuel) */
+/* .fiche-card { ... }  <-- tu l'as déjà, on ne touche pas */
+
+/* Réparé */
+.fiche-card.status-repare {
+  background: #e8fbe8;          /* vert pâle */
+  border-left: 4px solid #2fa672;
+}
+
+/* Remplacé */
+.fiche-card.status-remplace {
+  background: #e7f0ff;          /* bleu pâle */
+  border-left: 4px solid #0a5ad1;
+}
+
+/* Pièces commandées */
+.fiche-card.status-pieces {
+  background: #fff5e1;          /* orange pâle */
+  border-left: 4px solid #d89200;
+}
+
+/* Non réparable */
+.fiche-card.status-nonrep {
+  background: #ffe5e5;          /* rouge pâle */
+  border-left: 4px solid #c40000;
+}
+.fiche-card.status-repare {
+  background: #e8fbe8;
+  border-left: 4px solid #2fa672;
+}
+
+.fiche-card.status-remplace {
+  background: #e7f0ff;
+  border-left: 4px solid #0a5ad1;
+}
+
+.fiche-card.status-pieces {
+  background: #fff5e1;
+  border-left: 4px solid #d89200;
+}
+
+.fiche-card.status-nonrep {
+  background: #ffe5e5;
+  border-left: 4px solid #c40000;
+}
+.fiche-card.status-repare {
+  background: #e8fbe8;
+  border-left: 4px solid #2fa672;
+}
+
+.fiche-card.status-remplace {
+  background: #e7f0ff;
+  border-left: 4px solid #0a5ad1;
+}
+
+.fiche-card.status-nonrep {
+  background: #ffe5e5;
+  border-left: 4px solid #c40000;
+}
+.popup-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  max-height: 90%;
+  overflow-y: auto;
+}
+/* ===== Boutons Reconditionné ===== */
+
+.btn-edit,
+.btn-delete {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+/* Modifier */
+.btn-edit {
+    background-color: #1976d2;
+    color: white;
+}
+.btn-edit:hover {
+    background-color: #0d47a1;
+}
+
+/* Supprimer */
+.btn-delete {
+    background-color: #c62828;
+    color: white;
+}
+.btn-delete:hover {
+    background-color: #8e0000;
+}
+
+/* Carte PC Reconditionné */
+.pc-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: auto;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 900px;
+}
+/* ===== Bouton Retour ===== */
+.btn-retour {
+  display: inline-block;
+  margin: 15px;
+  padding: 8px 15px;
+  background: #ffffff;
+  border: 2px solid #2e7d32;
+  color: #2e7d32;
+  text-decoration: none;
+  font-size: 15px;
+  border-radius: 8px;
+  transition: 0.2s;
+  font-weight: bold;
+}
+
+.btn-retour:hover {
+  background: #2e7d32;
+  color: white;
+}
+.pc-found {
+  background: #d4f8d4 !important;
+  border-left: 6px solid #2e7d32 !important;
+  transition: 0.3s ease;
+}
+.btn-found {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-found:hover {
+  background: #1b5e20;
+}
+.pc-found {
+  background: #d4f8d4 !important;
+  border-left: 6px solid #2e7d32 !important;
+  transition: 0.3s ease;
+}

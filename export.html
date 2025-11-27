@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Export SAV — SOS ORDI 03</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.19.3/xlsx.full.min.js"></script>
+
+<style>
+body{
+    background:#f3f4f6;
+    font-family:Arial, sans-serif;
+    padding:0;
+    margin:0;
+}
+
+h1{
+    text-align:center;
+    padding:20px;
+    color:#16a34a;
+    font-size:28px;
+    font-weight:900;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin:15px;
+    border-radius:14px;
+    box-shadow:0 2px 5px #0003;
+}
+
+label{ font-weight:700; }
+
+input, select{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+    border-radius:8px;
+}
+
+button{
+    margin-top:10px;
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#16a34a;
+    color:white;
+    font-weight:800;
+}
+
+.export-btn{
+    background:#3b82f6;
+}
+
+.export-csv{
+    background:#f97316;
+}
+
+.export-pdf{
+    background:#dc2626;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📤 Export des fiches SAV</h1>
+
+<div class="card">
+    <label>Client (optionnel) :</label>
+    <input id="filterClient" placeholder="Ex : DUPONT">
+
+    <label>Statut :</label>
+    <select id="filterStatut">
+        <option value="">Tous</option>
+        <option value="repare">Réparé</option>
+        <option value="hs">HS</option>
+        <option value="attente">En attente</option>
+        <option value="piece">En attente pièce</option>
+    </select>
+
+    <label>Du :</label>
+    <input id="dateStart" type="date">
+
+    <label>Au :</label>
+    <input id="dateEnd" type="date">
+
+    <button onclick="exportExcel()" class="export-btn">📘 Export Excel (.xlsx)</button>
+    <button onclick="exportCSV()" class="export-csv">📄 Export CSV</button>
+    <button onclick="exportPDF()" class="export-pdf">📕 Export PDF résumé</button>
+</div>
+
+<div style="text-align:center;margin:20px;">
+    <a href="index.html">⬅ Retour</a>
+</div>
+
+<script type="module" src="./scripts/export.js"></script>
+
+</body>
+</html>

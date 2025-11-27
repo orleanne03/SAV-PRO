@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Fix Firestore — SOS ORDI 03</title>
+
+<script type="module">
+
+// -----------------------------------------------------------
+// 1) Import Firebase
+// -----------------------------------------------------------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getFirestore, collection, getDocs, updateDoc, doc 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// -----------------------------------------------------------
+// 2) Firebase Config (identique à ton firebase-config.js)
+// -----------------------------------------------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyAR8PVlerANOGdzNBwZjj81I6Ajtbn63eI",
+  authDomain: "sosordi03-sav.firebaseapp.com",
+  projectId: "sosordi03-sav"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// -----------------------------------------------------------
+// 3) Fonction de correction Firestore
+// -----------------------------------------------------------
+async function corrigerFirestore() {
+  const fichesRef = collection(db, "fiches");
+  const snap = await getDocs(fichesRef);
+
+  let total = 0;
+  let fixes = 0;
+
+  for (let d of snap.docs) {
+    total++;
+    const f = d.data();
+    let update = {};
+
+    // --------- Correction du statut ---------
+    if (!f.statut || f.statut === "" || typeof f.statut !== "string") {
+      update.statut = "En cours";   // valeur par défaut
+    }
+
+    // --------- Correction de la date utilisée par historique ---------
+    if (!f.date || typeof f.date !== "string" || f.date.trim() === "") {
+      if (f.dateArrivee && typeof f.dateArrivee === "string") {
+        update.date = new Date(f.dateArrivee).toISOString();
+      } else {
+        update.date = new Date().toISOString();  // fallback
+      }
+    }
+
+    // Rien à corriger → on saute
+    if (Object.keys(update).length === 0) continue;
+
+    // Application des corrections
+    await updateDoc(doc(db, "fiches", d.id), update);
+    fixes++;
+  }
+
+  // Affichage résultat
+  document.getElementById("result").innerHTML = `
+    <h2>✔ Correction terminée</h2>
+    <p>Total fiches détectées : <b>${total}</b></p>
+    <p>Fiches corrigées : <b style="color:green">${fixes}</b></p>
+    <p style="margin-top:20px;color:#1a8f5a;font-weight:bold;">
+      Vous pouvez maintenant ouvrir l'historique : toutes les fiches vont s'afficher.
+    </p>
+  `;
+}
+
+// Lancement auto
+corrigerFirestore();
+
+</script>
+</head>
+
+<body style="font-family:Arial;padding:40px;">
+<h1>🔥 Correction automatique Firestore</h1>
+<p>Veuillez patienter quelques secondes…</p>
+
+<div id="result" style="margin-top:20px; font-size:18px;"></div>
+
+</body>
+</html>

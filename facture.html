@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>SAV SOS ORDI 03 — Facture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/sav.css">
+
+<style>
+body {
+    background:#f3f5f4;
+    margin:0;
+    font-family:"Inter",sans-serif;
+}
+
+.header {
+    background:#16a34a;
+    color:white;
+    padding:14px 18px;
+    font-size:20px;
+    font-weight:700;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 4px #0003;
+}
+.header a { color:white; text-decoration:none; }
+
+.container {
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.card-pro {
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    margin-bottom:20px;
+    box-shadow:0 2px 4px #0002;
+    border-left:5px solid #16a34a;
+}
+
+h2 { margin-top:0; }
+
+.facture-box {
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 2px 4px #0002;
+}
+
+.fact-line {
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border-bottom:1px solid #ddd;
+}
+
+.total {
+    font-size:22px;
+    font-weight:700;
+    color:#16a34a;
+    padding-top:10px;
+}
+
+.btn {
+    padding:12px 16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    margin-top:10px;
+}
+.btn-green { background:#16a34a; color:white; }
+.btn-grey { background:#eee; }
+.btn-blue { background:#3b82f6; color:white; }
+
+</style>
+
+</head>
+<body>
+
+<div class="header">
+    <span>🧾 Facture Client</span>
+    <a href="historique.html">⬅ Retour</a>
+</div>
+
+<div class="container">
+
+    <div class="card-pro">
+        <h2>📄 Aperçu facture</h2>
+        <div id="factureZone" class="facture-box">
+            Chargement…
+        </div>
+
+        <button class="btn btn-green" onclick="generatePDF()">📄 Télécharger PDF</button>
+        <button class="btn btn-blue" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+
+</div>
+
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script type="module" src="scripts/sav-facture.js"></script>
+
+</body>
+</html>

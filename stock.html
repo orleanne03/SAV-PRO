@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Stock — SOS ORDI 03</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body {
+    margin:0;
+    font-family:"Inter",sans-serif;
+    background:#f3f5f4;
+}
+
+.header {
+    background:#16a34a;
+    color:white;
+    text-align:center;
+    padding:16px;
+    font-size:24px;
+    font-weight:800;
+}
+
+.container {
+    max-width:900px;
+    margin:auto;
+    padding:15px;
+}
+
+.btn {
+    padding:12px 16px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.btn-green { background:#16a34a; color:white; }
+.btn-red { background:#dc2626; color:white; }
+.btn-blue { background:#2563eb; color:white; }
+
+.card {
+    background:white;
+    padding:14px;
+    border-radius:14px;
+    box-shadow:0 2px 6px #0001;
+    margin-bottom:14px;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:14px;
+}
+
+.input {
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    margin-top:6px;
+}
+
+.search {
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    margin:10px 0;
+}
+
+.item {
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+}
+
+.thumb {
+    width:70px;
+    height:70px;
+    border-radius:8px;
+    overflow:hidden;
+    background:#ddd;
+}
+
+.thumb img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.info {
+    flex:1;
+}
+
+.title {
+    font-weight:700;
+    font-size:17px;
+}
+
+.small {
+    font-size:14px;
+    color:#555;
+}
+
+.qte-controls {
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+}
+
+.badge-low {
+    background:#dc2626;
+    color:white;
+    padding:2px 6px;
+    font-size:12px;
+    border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">📦 Gestion du Stock</div>
+
+<div class="container">
+
+    <button class="btn btn-green" onclick="toggleAdd()">➕ Ajouter un article</button>
+
+    <div id="addBox" style="display:none;margin-top:15px;" class="card">
+
+        <h2 style="margin-top:0;color:#16a34a;">Nouvel article</h2>
+
+        <label>Nom</label>
+        <input id="s_nom" class="input">
+
+        <label>Prix d'achat (€)</label>
+        <input id="s_achat" class="input" type="number" step="0.01">
+
+        <label>Prix de vente (€)</label>
+        <input id="s_vente" class="input" type="number" step="0.01">
+
+        <label>Quantité en stock</label>
+        <input id="s_qte" class="input" type="number">
+
+        <label>Photo (optionnel)</label>
+        <input id="s_photo" class="input" type="file" accept="image/*" capture="environment">
+
+        <button class="btn btn-blue" onclick="addArticle()">💾 Enregistrer</button>
+    </div>
+
+    <input type="text" class="search" id="search" placeholder="🔍 Rechercher un article">
+
+    <div id="stockList"></div>
+
+</div>
+
+<script type="module">
+
+import { db } from "./scripts/firebase-config.js";
+import { supabase } from "./scripts/supabase-config.js";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    updateDoc,
+    doc,
+    orderBy,
+    query
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ----------------------------------------------
+// VARIABLES
+// ----------------------------------------------
+const list = document.getElementById("stockList");
+const search = document.getElementById("search");
+const addBox = document.getElementById("addBox");
+let stock = [];
+
+// ----------------------------------------------
+// TOGGLE ADD FORM
+// ----------------------------------------------
+window.toggleAdd = function() {
+    addBox.style.display = addBox.style.display === "none" ? "block" : "none";
+};
+
+// ----------------------------------------------
+// LOAD STOCK
+// ----------------------------------------------
+async function load() {
+    const snap = await getDocs(query(collection(db, "stock"), orderBy("nom")));
+    stock = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    render(stock);
+}
+load();
+
+// ----------------------------------------------
+// RENDER
+// ----------------------------------------------
+function render(data) {
+    list.innerHTML = "";
+
+    data.forEach(item => {
+        const low = item.qte <= 2 ? `<span class="badge-low">⚠ Stock bas</span>` : "";
+
+        const photo = item.photo
+            ? `<img src="${item.photo}">`
+            : `<img src="https://via.placeholder.com/70?text=IMG">`;
+
+        list.insertAdjacentHTML("beforeend", `
+
+            <div class="card item">
+
+                <div class="thumb">${photo}</div>
+
+                <div class="info">
+
+                    <div class="title">${item.nom} ${low}</div>
+
+                    <div class="small">
+                        Achat : ${item.achat} €<br>
+                        Vente : ${item.vente} €<br>
+                        Qte : <b>${item.qte}</b>
+                    </div>
+
+                    <div class="qte-controls">
+                        <button class="btn btn-green" onclick="changeQte('${item.id}', ${item.qte + 1})">+1</button>
+                        <button class="btn btn-red" onclick="changeQte('${item.id}', ${item.qte - 1})">-1</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        `);
+    });
+}
+
+// ----------------------------------------------
+// RECHERCHE INSTANTANÉE
+// ----------------------------------------------
+search.addEventListener("input", () => {
+    const q = search.value.toLowerCase();
+    const filtered = stock.filter(item =>
+        item.nom.toLowerCase().includes(q)
+    );
+    render(filtered);
+});
+
+// ----------------------------------------------
+// CHANGE QTE
+// ----------------------------------------------
+window.changeQte = async function(id, newQte) {
+    if (newQte < 0) newQte = 0;
+    await updateDoc(doc(db, "stock", id), { qte: newQte });
+    load();
+};
+
+// ----------------------------------------------
+// ADD ARTICLE
+// ----------------------------------------------
+window.addArticle = async function() {
+
+    const nom = s_nom.value.trim();
+    const achat = parseFloat(s_achat.value);
+    const vente = parseFloat(s_vente.value);
+    const qte = parseInt(s_qte.value);
+
+    if (!nom) return alert("Nom requis");
+    if (isNaN(achat)) return alert("Prix achat invalide");
+    if (isNaN(vente)) return alert("Prix vente invalide");
+    if (isNaN(qte)) return alert("Quantité invalide");
+
+    let photoURL = null;
+    const file = s_photo.files[0];
+
+    if (file) {
+        const path = `stock/${Date.now()}_${file.name}`;
+        const { data, error } = await supabase
+            .storage
+            .from("sav-files")
+            .upload(path, file, { upsert:true });
+
+        if (error) alert(error.message);
+
+        const { data: urlData } = supabase
+            .storage
+            .from("sav-files")
+            .getPublicUrl(path);
+
+        photoURL = urlData.publicUrl;
+    }
+
+    await addDoc(collection(db, "stock"), {
+        nom,
+        achat,
+        vente,
+        qte,
+        photo: photoURL || null,
+        date: new Date().toISOString()
+    });
+
+    alert("✔ Article ajouté !");
+    addBox.style.display = "none";
+    s_nom.value = "";
+    s_achat.value = "";
+    s_vente.value = "";
+    s_qte.value = "";
+    s_photo.value = "";
+
+    load();
+};
+
+</script>
+
+</body>
+</html>

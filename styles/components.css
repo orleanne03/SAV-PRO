@@ -1,0 +1,154 @@
+/* ============================================================
+   COMPONENTS.CSS — Composants réutilisables : cartes, popup,
+   filtres, status, etc.
+============================================================ */
+
+/* ---------- Cartes de l'historique ---------- */
+
+.fiche-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  margin-bottom: 12px;
+  border-left: 8px solid #bde4c6;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.fiche-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.fiche-header-row strong {
+  font-size: 15px;
+}
+
+.fiche-header-row small {
+  font-size: 12px;
+}
+
+/* ---------- Status Badges ---------- */
+
+.fiche-status {
+  padding: 2px 8px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.status-en-cours {
+  background: #bde4c6;
+  color: #0b5c2c;
+}
+
+.status-repare {
+  background: #c8f5c8;
+  color: #0b5c2c;
+}
+
+.status-hs {
+  background: #ffd2d2;
+  color: #5c0b0b;
+}
+
+/* ---------- Boutons de filtre ---------- */
+
+.status-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-btn {
+  padding: 7px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  background: white;
+  border: 1px solid #b6d4c2;
+  cursor: pointer;
+  color: #0b5c2c;
+}
+
+.status-btn.active {
+  background: #0c8f3b;
+  border-color: #0c8f3b;
+  color: white;
+}
+
+/* ---------- POPUP ---------- */
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-box {
+  background: white;
+  width: 90%;
+  max-width: 750px;
+  padding: 25px;
+  border-radius: 14px;
+  border: 3px solid #0c8f3b;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: popupIn 0.18s ease-out;
+}
+
+@keyframes popupIn {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.popup-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 22px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Sections internes */
+.popup-section {
+  background: #f2fbf5;
+  border: 1px solid #cdebd6;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+
+/* Actions */
+.popup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.popup-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-green { background: #0c8f3b; color: white; }
+.btn-blue  { background: #1477d3; color: white; }
+.btn-red   { background: #d54242; color: white; }
+.btn-grey  { background: #d8d8d8; }

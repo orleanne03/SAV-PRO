@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>PC Reconditionné — SOS ORDI 03</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="styles/sav.css">
+
+    <style>
+        .suggestion-box {
+            background:#fff;
+            border:1px solid #ccc;
+            border-radius:6px;
+            display:none;
+            position:absolute;
+            width:100%;
+            max-height:200px;
+            overflow-y:auto;
+            z-index:10;
+        }
+        .sug-item {
+            padding:8px;
+            cursor:pointer;
+        }
+        .sug-item:hover {
+            background:#eef;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="page-header">
+    <a class="btn-return" onclick="history.back()">⬅</a>
+    PC RECONDITIONNÉ — SOS ORDI 03
+</header>
+
+<div class="fiche-container">
+
+    <!-- 🧍 CLIENT -->
+    <div class="card">
+        <h2>🧍 Client</h2>
+
+        <label>Nom :</label>
+        <input id="nom" class="input">
+        <div id="suggestionsNom" class="suggestion-box"></div>
+
+        <label>Téléphone :</label>
+        <input id="tel" class="input">
+        <div id="suggestionsTel" class="suggestion-box"></div>
+    </div>
+
+    <!-- 💻 CHOIX TYPE DE PC -->
+    <div class="card">
+        <h2>💻 Type de PC</h2>
+
+        <select id="typePC" class="input">
+            <option value="">-- Choisir --</option>
+            <option value="portable">PC Portable</option>
+            <option value="uc">Unité centrale</option>
+            <option value="aio">Tout-en-un</option>
+        </select>
+
+        <div id="tailleEcranZone" style="display:none; margin-top:15px;">
+            <label>Taille écran :</label>
+            <select id="tailleEcran" class="input"></select>
+        </div>
+    </div>
+
+    <!-- 🛠 CONFIG -->
+    <div class="card">
+        <h2>⚙ Configuration souhaitée</h2>
+
+        <label>RAM :</label>
+        <select id="ram" class="input">
+            <option>4 Go</option>
+            <option>8 Go</option>
+            <option>16 Go</option>
+            <option>32 Go</option>
+        </select>
+
+        <label>Stockage :</label>
+        <select id="stockage" class="input">
+            <option>256 Go SSD</option>
+            <option>512 Go SSD</option>
+            <option>1 To SSD</option>
+        </select>
+
+        <label>Usage :</label>
+        <select id="usage" class="input">
+            <option>Bureautique</option>
+            <option>Semi-gamer</option>
+            <option>Gamer</option>
+        </select>
+
+        <label>Budget max (€) :</label>
+        <input id="budget" type="number" class="input">
+
+        <label>Infos supplémentaires :</label>
+        <textarea id="infos" class="textarea"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="envoyerRecondi()">Envoyer la demande</button>
+</div>
+
+
+<script type="module">
+import { db } from "./scripts/firebase-config.js";
+import {
+    collection,
+    getDocs,
+    addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ============================================================
+// 🔥 RECHERCHE CLIENT IDENTIQUE À FICHE.HTML
+// ============================================================
+
+let CLIENTS = [];
+let clientsReady = false;
+
+// Charger cache si dispo
+const cache = localStorage.getItem("clientsCache");
+if (cache) {
+    CLIENTS = JSON.parse(cache);
+    clientsReady = true;
+}
+
+// Mise à jour Firestore après affichage
+setTimeout(async () => {
+    try {
+        const snap = await getDocs(collection(db, "clients"));
+        CLIENTS = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        localStorage.setItem("clientsCache", JSON.stringify(CLIENTS));
+        clientsReady = true;
+    } catch(e){}
+}, 20);
+
+// =============== FONCTIONS SUGGESTIONS ==================
+
+function hideSuggestions() {
+    suggestionsNom.style.display = "none";
+    suggestionsTel.style.display = "none";
+}
+
+function showSuggestions(list, zone, field) {
+    if (!list.length) return hideSuggestions();
+
+    const box = field === "nom" ? suggestionsNom : suggestionsTel;
+    box.innerHTML = list.map(c => `
+        <div class="sug-item" onclick="selectClient('${c.nom}', '${c.tel}')">
+            <strong>${c.nom}</strong><br>
+            <small>${c.tel}</small>
+        </div>
+    `).join("");
+
+    box.style.display = "block";
+}
+
+window.selectClient = function(n, t) {
+    nom.value = n;
+    tel.value = t;
+    hideSuggestions();
+};
+
+// =============== RECHERCHE PAR NOM ==================
+
+nom.addEventListener("input", () => {
+    if (!clientsReady) return hideSuggestions();
+
+    const val = nom.value.trim().toUpperCase();
+    nom.value = val;
+
+    if (val.length < 1) return hideSuggestions();
+
+    const results = CLIENTS.filter(c => {
+        if (!c.nom) return false;
+        const firstWord = c.nom.toUpperCase().split(" ")[0];
+        return firstWord.startsWith(val);
+    });
+
+    showSuggestions(results, suggestionsNom, "nom");
+});
+
+// ================== FORMATAGE TEL + RELANCE RECHERCHE ==================
+tel.addEventListener("input", (e) => {
+    let raw = tel.value.replace(/\D/g, ""); // nettoyer
+    raw = raw.substring(0, 10); // max 10 chiffres
+
+    // Construction format 00-00-00-00-00
+    let formatted = "";
+    for (let i = 0; i < raw.length; i++) {
+        if (i > 0 && i % 2 === 0) formatted += "-";
+        formatted += raw[i];
+    }
+
+    // Mise à jour champ
+    tel.value = formatted;
+
+    // 🔥 relancer la recherche Firestore (ton code d'origine)
+    // uniquement si au moins 4 chiffres
+    const digits = raw;
+    if (clientsReady && digits.length >= 4) {
+        const results = CLIENTS.filter(c => {
+            const t = (c.tel || "").replace(/\D/g, "");
+            return t.startsWith(digits);
+        });
+
+        showSuggestions(results, suggestionsTel, "tel");
+    } else {
+        hideSuggestions();
+    }
+});
+
+
+// ============================================================
+// 📏 LOGIQUE TAILLE ÉCRAN
+// ============================================================
+
+typePC.addEventListener("change", () => {
+    tailleEcranZone.style.display = "none";
+
+    if (typePC.value === "portable") {
+        tailleEcran.innerHTML = `
+            <option>14"</option>
+            <option>15"</option>
+            <option>17"</option>
+        `;
+        tailleEcranZone.style.display = "block";
+    }
+
+    if (typePC.value === "aio") {
+        tailleEcran.innerHTML = `
+            <option>19"</option>
+            <option>22"</option>
+            <option>24"</option>
+            <option>27"</option>
+        `;
+        tailleEcranZone.style.display = "block";
+    }
+});
+
+
+// ============================================================
+// 📤 Envoi Firestore
+// ============================================================
+
+window.envoyerRecondi = async function() {
+    try {
+        await addDoc(collection(db, "pcRecond"), {
+            nom: nom.value,
+            tel: tel.value,
+            typePC: typePC.value,
+            tailleEcran: tailleEcran.value || null,
+            ram: ram.value,
+            stockage: stockage.value,
+            usage: usage.value,
+            budget: budget.value,
+            infos: infos.value,
+            date: Date.now()
+        });
+
+        alert("Demande envoyée !");
+    } catch(e) {
+        alert("Erreur");
+        console.error(e);
+    }
+};
+
+</script>
+
+</body>
+</html>

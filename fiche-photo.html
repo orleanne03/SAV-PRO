@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Photos — SOS ORDI 03</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family:"Inter",sans-serif;
+    margin:0;
+    background:#f3f5f4;
+}
+
+.header {
+    background:#16a34a;
+    padding:16px;
+    text-align:center;
+    color:white;
+    font-size:22px;
+    font-weight:800;
+}
+
+.container {
+    max-width:700px;
+    margin:auto;
+    padding:15px;
+}
+
+.section-title {
+    font-size:20px;
+    font-weight:700;
+    margin:15px 0 8px;
+    color:#16a34a;
+}
+
+.card {
+    background:white;
+    padding:14px;
+    border-radius:14px;
+    box-shadow:0 2px 6px #0002;
+    margin-bottom:15px;
+}
+
+.btn {
+    padding:12px 16px;
+    border:none;
+    border-radius:10px;
+    background:#16a34a;
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.btn-red {
+    background:#dc2626;
+}
+
+.photo-preview {
+    width:100%;
+    max-height:340px;
+    object-fit:contain;
+    margin-top:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+.center {
+    text-align:center;
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📸 Photos SAV</div>
+
+<div class="container">
+
+    <div class="section-title">Photo AVANT</div>
+    <div class="card">
+
+        <input id="avant_file" type="file" accept="image/*" capture="environment">
+
+        <button class="btn" onclick="uploadAvant()">📤 Envoyer la photo</button>
+
+        <img id="avant_preview" class="photo-preview" style="display:none">
+        <button id="avant_delete" class="btn btn-red" style="display:none" onclick="deleteAvant()">🗑 Supprimer</button>
+    </div>
+
+    <div class="section-title">Photo APRÈS</div>
+    <div class="card">
+
+        <input id="apres_file" type="file" accept="image/*" capture="environment">
+
+        <button class="btn" onclick="uploadApres()">📤 Envoyer la photo</button>
+
+        <img id="apres_preview" class="photo-preview" style="display:none">
+        <button id="apres_delete" class="btn btn-red" style="display:none" onclick="deleteApres()">🗑 Supprimer</button>
+    </div>
+
+    <div class="center">
+        <button class="btn" onclick="history.back()">⬅ Retour</button>
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import { db } from "./scripts/firebase-config.js";
+import { supabase } from "./scripts/supabase-config.js";
+import {
+    doc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
+
+const avantPreview = document.getElementById("avant_preview");
+const apresPreview = document.getElementById("apres_preview");
+
+const deleteAvantBtn = document.getElementById("avant_delete");
+const deleteApresBtn = document.getElementById("apres_delete");
+
+// -------------------------------
+// CHARGEMENT INITIAL
+// -------------------------------
+async function load() {
+    const snap = await getDoc(doc(db, "fiches", id));
+    if (!snap.exists()) return;
+
+    const f = snap.data();
+
+    if (f.photoAvant) {
+        avantPreview.src = f.photoAvant;
+        avantPreview.style.display = "block";
+        deleteAvantBtn.style.display = "block";
+    }
+
+    if (f.photoApres) {
+        apresPreview.src = f.photoApres;
+        apresPreview.style.display = "block";
+        deleteApresBtn.style.display = "block";
+    }
+}
+load();
+
+// -------------------------------
+// UPLOAD PHOTO AVANT
+// -------------------------------
+window.uploadAvant = async function() {
+
+    const file = document.getElementById("avant_file").files[0];
+    if (!file) return alert("Sélectionne une photo.");
+
+    const path = `photos/${id}_avant_${Date.now()}.jpg`;
+
+    const { error } = await supabase.storage
+        .from("sav-files")
+        .upload(path, file, { upsert: true });
+
+    if (error) return alert("Erreur upload : " + error.message);
+
+    const { data: publicUrl } = supabase.storage
+        .from("sav-files")
+        .getPublicUrl(path);
+
+    await updateDoc(doc(db, "fiches", id), {
+        photoAvant: publicUrl.publicUrl
+    });
+
+    avantPreview.src = publicUrl.publicUrl;
+    avantPreview.style.display = "block";
+    deleteAvantBtn.style.display = "block";
+
+    alert("✔ Photo AVANT envoyée !");
+};
+
+// -------------------------------
+// SUPPRESSION PHOTO AVANT
+// -------------------------------
+window.deleteAvant = async function() {
+
+    if (!confirm("Supprimer la photo AVANT ?")) return;
+
+    await updateDoc(doc(db, "fiches", id), {
+        photoAvant: ""
+    });
+
+    avantPreview.style.display = "none";
+    deleteAvantBtn.style.display = "none";
+
+    alert("✔ Photo supprimée !");
+};
+
+// -------------------------------
+// UPLOAD PHOTO APRÈS
+// -------------------------------
+window.uploadApres = async function() {
+
+    const file = document.getElementById("apres_file").files[0];
+    if (!file) return alert("Sélectionne une photo.");
+
+    const path = `photos/${id}_apres_${Date.now()}.jpg`;
+
+    const { error } = await supabase.storage
+        .from("sav-files")
+        .upload(path, file, { upsert: true });
+
+    if (error) return alert("Erreur upload : " + error.message);
+
+    const { data: publicUrl } = supabase.storage
+        .from("sav-files")
+        .getPublicUrl(path);
+
+    await updateDoc(doc(db, "fiches", id), {
+        photoApres: publicUrl.publicUrl
+    });
+
+    apresPreview.src = publicUrl.publicUrl;
+    apresPreview.style.display = "block";
+    deleteApresBtn.style.display = "block";
+
+    alert("✔ Photo APRÈS envoyée !");
+};
+
+// -------------------------------
+// SUPPRESSION PHOTO APRÈS
+// -------------------------------
+window.deleteApres = async function() {
+
+    if (!confirm("Supprimer la photo APRÈS ?")) return;
+
+    await updateDoc(doc(db, "fiches", id), {
+        photoApres: ""
+    });
+
+    apresPreview.style.display = "none";
+    deleteApresBtn.style.display = "none";
+
+    alert("✔ Photo supprimée !");
+};
+
+</script>
+
+</body>
+</html>

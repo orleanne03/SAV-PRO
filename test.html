@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Test Fiche SAV – Glassmorphism</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+/* ------------------ BACKGROUND ------------------ */
+body {
+    margin:0;
+    padding:40px;
+    font-family: Inter, sans-serif;
+    background: linear-gradient(135deg,#4f46e5,#0ea5e9,#14b8a6);
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
+}
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* ------------------ GLOBAL CARD ------------------ */
+.card {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto 30px auto;
+    padding: 25px 35px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.15);
+    color: white;
+}
+
+/* ------------------ TITRES ------------------ */
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* ------------------ INPUTS ------------------ */
+.input, .textarea, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 15px;
+    outline:none;
+    transition: 0.2s;
+}
+
+.input:focus, .textarea:focus, select:focus {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.8);
+}
+
+label {
+    display:block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+/* ------------------ TEXTAREA ------------------ */
+.textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+/* ------------------ BOUTON ------------------ */
+.btn-primary {
+    margin-top:20px;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #06b6d4, #3b82f6);
+    color:white;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.03);
+    opacity: 0.92;
+}
+
+</style>
+</head>
+<body>
+
+<!-- SECTION CLIENT -->
+<div class="card">
+    <h2>🧍 Client</h2>
+
+    <label>Nom :</label>
+    <input class="input" placeholder="Nom du client">
+
+    <label>Téléphone :</label>
+    <input class="input" placeholder="Téléphone">
+
+    <label>Date d’arrivée :</label>
+    <input type="date" class="input">
+</div>
+
+<!-- SECTION MATÉRIEL -->
+<div class="card">
+    <h2>🖥 Matériel</h2>
+
+    <label>Type :</label>
+    <select class="input">
+        <option>Ordinateur Portable</option>
+        <option>Ordinateur Fixe</option>
+        <option>Tablette</option>
+    </select>
+
+    <label>Modèle :</label>
+    <input class="input" placeholder="Ex : Inspiron 15">
+
+    <label>Mot de passe :</label>
+    <input class="input" placeholder="Mot de passe">
+</div>
+
+<!-- SECTION PROBLEME -->
+<div class="card">
+    <h2>⚠️ Problème</h2>
+
+    <textarea class="textarea" placeholder="Décrire le problème…"></textarea>
+
+    <button class="btn-primary">Enregistrer</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard SAV — SOS ORDI 03</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+    margin:0;
+    background:#f3f4f6;
+    font-family:Arial, sans-serif;
+}
+
+h1{
+    text-align:center;
+    padding:20px;
+    margin:0;
+    color:#16a34a;
+    font-weight:900;
+}
+
+/* Conteneur */
+.dashboard{
+    max-width:900px;
+    margin:auto;
+    padding:10px;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:14px;
+    margin-bottom:14px;
+    box-shadow:0 2px 5px #0002;
+}
+
+.card h2{
+    margin:0 0 10px 0;
+    color:#111;
+}
+
+/* 🔥 ALERTES */
+.alert-block{
+    padding:12px;
+    border-radius:10px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.alert-red{
+    background:#fee2e2;
+    border-left:6px solid #dc2626;
+    color:#7f1d1d;
+}
+
+.alert-orange{
+    background:#ffedd5;
+    border-left:6px solid #f97316;
+    color:#7c2d12;
+}
+
+.alert-blue{
+    background:#dbeafe;
+    border-left:6px solid #3b82f6;
+    color:#1e3a8a;
+}
+
+/* Stats */
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.stat-box{
+    background:#e8f8ee;
+    border-left:6px solid #16a34a;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+}
+.stat-box h3{ margin:0;font-size:22px;font-weight:900; }
+.big-number{
+    text-align:center;
+    font-size:30px;
+    font-weight:900;
+}
+.statut-list div{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    justify-content:space-between;
+}
+.return{ display:block;text-align:center;margin:20px 0; }
+</style>
+</head>
+
+<body>
+
+<h1>📊 Dashboard SAV — SOS ORDI 03</h1>
+
+<div class="dashboard">
+
+    <!-- 🔥 ALERTES -->
+    <div id="alertContainer"></div>
+
+    <!-- RÉPARATIONS -->
+    <div class="card">
+        <h2>📌 Aperçu global</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3 id="totalFiches">0</h3><small>Total fiches</small>
+            </div>
+            <div class="stat-box">
+                <h3 id="totalRep">0</h3><small>Réparés</small>
+            </div>
+            <div class="stat-box">
+                <h3 id="totalHS">0</h3><small>HS</small>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+        <a href="export.html" class="link">📤 Exporter les données</a>
+    </div>
+    
+    <!-- CHIFFRES -->
+    <div class="card">
+        <h2>💶 Chiffres</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3 id="caEst">0 €</h3><small>Estimation total</small>
+            </div>
+            <div class="stat-box">
+                <h3 id="caReel">0 €</h3><small>Montant réel total</small>
+            </div>
+            <div class="stat-box">
+                <h3 id="tauxRep">0%</h3><small>Taux de réussite</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUTS -->
+    <div class="card">
+        <h2>📂 Statuts actifs</h2>
+        <div class="statut-list" id="statutList"></div>
+    </div>
+
+    <!-- MARQUE -->
+    <div class="card">
+        <h2>🏆 Marque la plus réparée</h2>
+        <p id="topMarque" class="big-number">—</p>
+    </div>
+
+</div>
+
+<a href="index.html" class="return">⬅ Retour</a>
+
+<script type="module" src="./scripts/dashboard.js"></script>
+
+</body>
+</html>

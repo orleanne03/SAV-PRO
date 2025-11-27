@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique SAV — SOS ORDI 03</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e8f7ee; /* Vert clair */
+        }
+
+        .page-header {
+            background: #0c8f3b;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .btn-return {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            text-decoration: none;
+            background: rgba(255,255,255,0.25);
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 20px;
+        }
+
+        .history-container {
+            max-width: 900px;
+            margin: 15px auto;
+            padding: 0 10px;
+        }
+
+        .search-bar {
+            margin-bottom: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #b6d4c2;
+            font-size: 15px;
+        }
+
+        .status-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .status-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #bcd9c4;
+            background: #ffffff;
+            color: #0b5c2c;
+            font-weight: 600;
+        }
+
+        .status-btn.active {
+            background: #0b8a3b;
+            color: #fff;
+            border-color: #0b8a3b;
+        }
+
+        .fiche-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-left: 8px solid #bde4c6;
+            cursor: pointer;
+        }
+
+        .fiche-header-row strong { font-size: 15px; }
+        .fiche-header-row small { font-size: 12px; }
+
+        .fiche-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .status-en-cours { background: #bde4c6; color:#0b5c2c; }
+        .status-repare   { background: #c8f5c8; color:#0b5c2c; }
+        .status-hs       { background: #ffd2d2; color:#5c0b0b; }
+
+        /* POPUP */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content:center;
+            align-items:center;
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+
+        .popup-box {
+            background:#ffffff;
+            width: 90%;
+            max-width: 750px;
+            padding: 25px;
+            border-radius: 14px;
+            border: 3px solid #0c8f3b;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            animation: popupIn 0.18s ease-out;
+        }
+
+        @keyframes popupIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .popup-close {
+            position:absolute;
+            top:10px;
+            right:12px;
+            background:none;
+            border:none;
+            font-size:20px;
+            cursor:pointer;
+        }
+
+        .popup-section {
+            margin-top: 10px;
+            padding: 12px;
+            background:#f2fbf5;
+            border-radius: 10px;
+            border: 1px solid #bde4c6;
+        }
+
+        .popup-actions {
+            display:flex;
+            gap:10px;
+            margin-top:15px;
+            flex-wrap: wrap;
+        }
+
+        .popup-btn {
+            padding:10px 14px;
+            border-radius:10px;
+            font-weight:bold;
+            cursor:pointer;
+            border:none;
+            flex:1;
+            font-size:14px;
+        }
+
+        .btn-green { background:#0c8f3b; color:white; }
+        .btn-blue  { background:#178be5; color:white; }
+        .btn-red   { background:#d34242; color:white; }
+        .btn-grey  { background:#d5d5d5; }
+
+        
+    /* BOUTONS STATUTS DANS LA POPUP */
+    .status-toggle {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        border: 2px solid var(--c);
+        background: white;
+        color: var(--c);
+        transition: background 0.15s, color 0.15s;
+        margin-right: 6px;
+    }
+
+    .status-toggle.active {
+        background: var(--c);
+        color: #ffffff;
+    }
+    </style>
+</head>
+
+<body>
+
+<header class="page-header">
+    <a class="btn-return" href="index.html">⬅ Retour</a>
+    Historique SAV
+</header>
+
+<div class="history-container">
+
+    <div class="search-bar">
+        <input id="searchInput" class="search-input" placeholder="🔎 Rechercher : nom, téléphone, marque, modèle">
+    </div>
+
+    <div class="status-btns">
+        <div class="status-btn active filter-btn" data-filter="Tous">Tous</div>
+        <div class="status-btn filter-btn" data-filter="En cours">En cours</div>
+        <div class="status-btn filter-btn" data-filter="Réparé">Réparé</div>
+        <div class="status-btn filter-btn" data-filter="HS OK">HS OK</div>
+    </div>
+
+    <div id="listeFiches"></div>
+</div>
+
+<!-- POPUP -->
+<div id="popupFiche" class="popup-overlay">
+    <div class="popup-box">
+        <button id="popupClose" class="popup-close">✕</button>
+        <div id="popupContent">Chargement...</div>
+    </div>
+</div>
+
+<script type="module" src="scripts/sav-historique.js"></script>
+
+</body>
+</html>
